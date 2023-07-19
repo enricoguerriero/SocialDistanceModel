@@ -178,28 +178,30 @@ for (i in seq_along(myframe$NQUEST)) {
 
 # Aggrego per famiglia i dati del df1 che sono personali
 # La variabile sesso diventa la proporzione maschile nella famiglia
-df$SEX <- df$SEX*(-1)+2
-df$B01 <- df$B01*(-1)+2
-agg_df <- aggregate(df[,c("SEX")], by = list(df$NQUEST), mean)
+df1$SEX <- df1$SEX*(-1)+2
+df1$B01 <- df1$B01*(-1)+2
+agg_df <- aggregate(df1[,c("SEX")], by = list(df1$NQUEST), mean)
 myframe$SEX <- agg_df$x
-df$DIP <- df$APQUAL2 <= 5
-df$IND <- (df$APQUAL2 >=6 & df$APQUAL2 <= 10) | df$APQUAL2 == 20
-df$DIS <- (df$APQUAL2 >= 11 & df$APQUAL2 <=14) | (df$APQUAL2 >= 17 & df$APQUAL2 <=19) | df$APQUAL2 == 21
-df$PENS <- df$APQUAL2 == 15 | df$APQUAL2 == 16
+df1$DIP <- df1$APQUAL2 <= 5
+df1$IND <- (df1$APQUAL2 >=6 & df1$APQUAL2 <= 10) | df1$APQUAL2 == 20
+df1$DIS <- (df1$APQUAL2 >= 11 & df1$APQUAL2 <=14) | (df1$APQUAL2 >= 17 & df1$APQUAL2 <=19) | df1$APQUAL2 == 21
+df1$PENS <- df1$APQUAL2 == 15 | df1$APQUAL2 == 16
 # Il titolo di studio per una famiglia è il titolo più alto tra i componenti
-agg_df <- aggregate(df[,c("STUDIO")], by = list(df$NQUEST), max)
+agg_df <- aggregate(df1[,c("STUDIO")], by = list(df1$NQUEST), max)
 myframe$STUDIO <- agg_df$x
-agg_df <- aggregate(df[,c("B01", "DIP", "IND", "DIS", "PENS")], by = list(df$NQUEST), sum)
+agg_df <- aggregate(df1[,c("B01", "DIP", "IND", "DIS", "PENS")], by = list(df1$NQUEST), sum)
 myframe$OCC <- agg_df$B01
 myframe$DIP <- agg_df$DIP
 myframe$IND <- agg_df$IND
 myframe$DIS <- agg_df$DIS
 myframe$PENS <- agg_df$PENS
 
+df <- myframe
 # Salvo le variabili che mi interessano per alleggerire il workspace
-vars_to_keep <- c("myframe")
+vars_to_keep <- c("df")
 # lista di tutte le variabili nel workspace
 all_vars <- ls()
 # rimuovi tutte le variabili tranne quelle da mantenere
 rm(list = setdiff(all_vars, vars_to_keep))
 rm(all_vars)
+
