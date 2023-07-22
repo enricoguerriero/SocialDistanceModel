@@ -17,7 +17,38 @@ si è scelto di operare con le tabelle Q20A, Q20B, Q20C1, Q20C2, Q20D, Q20E, Q20F
 Alle tabelle sono state applicate aggregazioni e trasformazioni, al fine di ottenere un'unica tabella con le variabili di interesse per lo studio, aventi tutte come unità di riferimento la famiglia:
 - NQUEST: Numero di questionario, è stata mantenuta solo perché chiave primaria anche di questa tabella.
 - NCOMP: Numero di componenti della famiglia.
-- VALOGG: Valore degli oggetti di lusso della famiglia.
+- VALOGG: Valore degli oggetti di valore della famiglia.
 - VALCAR: Valore delle macchine della famiglia.
 - VALMEZ: Valore degli altri mezzi della famiglia.
-- VALCA: Valore degli oggetti "della casa" della famiglia (es. elettrodomestici)
+- VALCA: Valore degli oggetti "della casa" della famiglia (es. elettrodomestici).
+- CIBINT: Valore del cibo consumato in casa al mese.
+- CIBEST: Valore del cibo consumato fuori casa al mese.
+- BOLLETTE: Valore medio mensile delle bollette.
+- VIAGGI: Valore dei viaggi effettuati nel 2020.
+- ALTCONS: Valore degli altri consumi (non rientranti nelle precedenti categorie) effettuati nel 2020.
+- SOLDMENS: Cifra mensile necessaria per una vita dignitosa senza lussi per la propria famiglia.
+- FINMES: Facilità ad arrivare a fine mese (1 molta difficoltà, 6 molta facilità).
+- HAPPY: Felicità dell'intervistato (1 molto triste, 10 molto felice). Questa variabile fa riferimento ad un solo componente della famiglia.
+- HOMEVAL: Valore dell'abitazione in cui vive la famiglia.
+- REDPERC: Quanto la famiglia ritiene che il proprio reddito si discosti dalla media.
+- REDPERCFINE: Quanto la famiglia ritiene che il proprio reddito varierà nell'anno seguente.
+- VAROGG: Variazione di valore degli oggetti di valore della famiglia nel 2020.
+- VARCAR: Variazione di valore delle macchine della famiglia nel 2020.
+- VARMEZ: Variazione di valore degli altri mezzi della famiglia nel 2020.
+- VARCA: Variazione di valore degli oggetti della casa della famiglia nel 2020.
+- VARCON: Variazione dei consumi della famiglia nel 2020.
+- VARCONAL: Variazione dei consumi alimentari della famiglia nel 2020.
+- SEX: Proporzione di maschi nella famiglia.
+- STUDIO: Il titolo di studio maggiore conseguito tra i membri della famiglia (da 1 a 8, ordinata).
+- OCC: Proporzione di occupati nella famiglia.
+- DIP: Proporzione di lavoratori dipendenti nella famiglia.
+- IND: Proporzione di lavoratori indipendenti nella famiglia.
+- DIS: Proporzione di disoccupati nella famiglia.
+- PENS: Proporzione di pensionati nella famiglia.
+
+```{r}
+source("DataLibrary.R")
+```
+
+
+
