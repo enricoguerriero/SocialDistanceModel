@@ -113,7 +113,7 @@ plot_grid(ncomp.plot, happy.plot, studio.plot,
 ```
 
 Adesso si visualizzano le variabili continue;
-si parte dalle variabili che indicano il valore degli oggetti, a sinistra i grafici indicanti la distribuzione effettiva, a destra con la distribuzione escludendo gli ultimi 5 percentili:
+le seguenti variabili hanno distribuzioni molto asimmetriche, pertanto a sinistra si vedono i grafici indicanti la distribuzione effettiva, a destra quelli con la distribuzione priva degli ultimi 5 percentili:
 
 ```{r, include= T, echo = F}
 plot_grid(valogg.plot, valogg.plot.95, 
@@ -121,5 +121,43 @@ plot_grid(valogg.plot, valogg.plot.95,
           valmez.plot, valmez.plot.95, 
           valca.plot, valca.plot.95, 
           ncol = 2)
+```
+
+```{r, include=T, echo = F}
+plot_grid(cibint.plot, cibint.plot.95, 
+          cibest.plot, cibest.plot.95,
+          bollette.plot, bollette.plot.95,
+          altcons.plot, altcons.plot.95,
+          ncol = 2)
+```
+Per le prossime due variabili invece seguono i grafici completi a sinistra e privi del primo e ultimo percentile a destra, poiché sono state date risposte assurde e in questo modo vengono "pulite" (es. gente che dice che sono sufficienti 0 o 30000 euro al mese per vivere ma senza lussi):
+```{r, include = T, echo = F}
+plot_grid(soldmens.plot, soldmens.plot.98,
+          redperc.plot, redperc.plot.98,
+          ncol = 2)
+```
+
+Seguono dei grafici "brutti" ma che non possono essere corretti togliendo quantili in quanto la maggiorparte dei dati si concentra su una risposta:
+```{r, include = T, echo = F}
+plot_grid(varogg.plot, varcar.plot,
+          varmez.plot, varca.plot,
+          varcon.plot, varconal.plot,
+          ncol = 2)
+```
+
+Per quanto riguarda i viaggi e il valore dei beni di lusso, è sufficiente togliere un percentile per stabilizzare la scala sull'asse x:
+
+```{r, include = T, echo = F}
+plot_grid(viaggi.plot, viaggi.plot.99,
+          valux.plot, valux.plot.99,
+          ncol = 2)
+```
+
+I seguenti grafici possono essere rappresentati per le intere distribuzioni:
+
+```{r, include= T, echo = F}
+plot_grid(consumo.plot, homeval.plot,
+          sex.plot, procib.plot,
+          prolav.plot, prored.plot)
 ```
 

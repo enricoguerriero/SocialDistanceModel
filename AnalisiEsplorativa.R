@@ -135,15 +135,30 @@ cibint.plot <- ggplot(data = df, aes(x = CIBINT)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
     labs(x = "Valore del cibo consumato a casa", y = "Frequenza")
+cibint.plot.95 <- ggplot(data = df[df$CIBINT < quantile(df$CIBINT, probs = 0.95),]
+                         , aes(x = CIBINT)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Valore del cibo consumato a casa", y = "Frequenza")
 
 # CIBEST
 cibest.plot <- ggplot(data = df, aes(x = CIBEST)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Valore del cibo consumato a casa", y = "Frequenza")
+    labs(x = "Valore del cibo consumato fuori casa", y = "Frequenza")
+cibest.plot.95 <- ggplot(data = df[df$CIBEST < quantile(df$CIBEST, probs = 0.95),]
+                         , aes(x = CIBEST)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Valore del cibo consumato fuori casa", y = "Frequenza")
 
 # BOLLETTE
 bollette.plot <- ggplot(data = df, aes(x = BOLLETTE)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Bollette", y = "Frequenza")
+bollette.plot.95 <- ggplot(data = df[df$BOLLETTE < quantile(df$BOLLETTE, probs = 0.95),]
+                         , aes(x = BOLLETTE)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
     labs(x = "Bollette", y = "Frequenza")
@@ -164,20 +179,26 @@ altcons.plot.95 <- ggplot(data = df[df$ALTCONS < quantile(df$ALTCONS, probs = 0.
 soldmens.plot <- ggplot(data = df, aes(x = SOLDMENS)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Soldi necessari al mese (?)", y = "Frequenza")
+    labs(x = "Soldi necessari al mese", y = "Frequenza")
+soldmens.plot.98 <- ggplot(data = df[df$SOLDMENS < quantile(df$SOLDMENS, probs = 0.99) &
+                                        df$SOLDMENS > quantile(df$SOLDMENS, probs = 0.01),], 
+                          aes(x = SOLDMENS)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Soldi necessari al mese", y = "Frequenza")
 
 # REDPERC
 redperc.plot <- ggplot(data = df, aes(x = REDPERC)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Scostamento (percepito) del reddito dalla media", y = "Frequenza")
+    labs(x = "Scostamento del reddito dalla media", y = "Frequenza")
 # Tolgo primo e ultimo percentile per visualizzare meglio distribuzione
 redperc.plot.98 <- ggplot(data = df[df$REDPERC < quantile(df$REDPERC, probs = 0.99) &
                                         df$REDPERC > quantile(df$REDPERC, probs = 0.01),], 
                           aes(x = REDPERC)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Scostamento (percepito) del reddito dalla media", y = "Frequenza")
+    labs(x = "Scostamento del reddito dalla media", y = "Frequenza")
 
 # VAROGG
 varogg.plot <- ggplot(data = df, aes(x = VAROGG)) +
@@ -240,7 +261,7 @@ varconal.plot <- ggplot(data = df, aes(x = VARCONAL)) +
 sex.plot <- ggplot(data = df, aes(x = SEX)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Proporzione di maschi (?) per nucleo familiare", y = "Frequenza")
+    labs(x = "Proporzione di maschi", y = "Frequenza")
 
 # VARISP
 varisp.plot <- ggplot(data = df, aes(x = VARISP)) +
@@ -277,7 +298,7 @@ consumo.plot <- ggplot(data = df, aes(x = CONSUMO)) +
 prolav.plot <- ggplot(data = df, aes(x = PROLAV)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Proporzione di lavoratori per nucleo", y = "Frequenza")
+    labs(x = "Proporzione di lavoratori", y = "Frequenza")
 
 # PROCIB
 procib.plot <- ggplot(data = df, aes(x = PROCIB)) +
