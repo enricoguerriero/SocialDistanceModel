@@ -434,6 +434,7 @@ famiglia (da 1 a 8, ordinata).</li>
 <li>PENS: Proporzione di pensionati nella famiglia.</li>
 </ul>
 </ul>
+<p>Summary del dataset:</p>
 <pre><code>##      NQUEST           NCOMP           VALOGG            VALCAR       
 ##  Min.   :   173   Min.   :1.000   Min.   :      0   Min.   :      0  
 ##  1st Qu.:893548   1st Qu.:2.000   1st Qu.:    600   1st Qu.:   1500  
@@ -483,13 +484,25 @@ famiglia (da 1 a 8, ordinata).</li>
 ##  Mean   :5.108   Mean   :0.9342   Mean   :0.6389   Mean   :0.2953  
 ##  3rd Qu.:7.000   3rd Qu.:2.0000   3rd Qu.:1.0000   3rd Qu.:0.0000  
 ##  Max.   :8.000   Max.   :6.0000   Max.   :5.0000   Max.   :5.0000  
-##       DIS              PENS       
-##  Min.   :0.0000   Min.   :0.0000  
-##  1st Qu.:0.0000   1st Qu.:0.0000  
-##  Median :0.0000   Median :0.0000  
-##  Mean   :0.8509   Mean   :0.6474  
-##  3rd Qu.:1.0000   3rd Qu.:1.0000  
-##  Max.   :6.0000   Max.   :3.0000</code></pre>
+##       DIS              PENS            VALUX            CONSUMO     
+##  Min.   :0.0000   Min.   :0.0000   Min.   :     50   Min.   :  120  
+##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:  10000   1st Qu.: 2700  
+##  Median :0.0000   Median :0.0000   Median :  21002   Median : 4075  
+##  Mean   :0.8509   Mean   :0.6474   Mean   :  39834   Mean   : 5174  
+##  3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:  41688   3rd Qu.: 6150  
+##  Max.   :6.0000   Max.   :3.0000   Max.   :4200000   Max.   :88000  
+##      PROLAV           PROCIB           PRORED      
+##  Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.5000  
+##  Median :0.3333   Median :0.1176   Median :1.0000  
+##  Mean   :0.3642   Mean   :0.1481   Mean   :0.7323  
+##  3rd Qu.:0.6667   3rd Qu.:0.2500   3rd Qu.:1.0000  
+##  Max.   :1.0000   Max.   :0.9091   Max.   :1.0000</code></pre>
+<p>Il dataframe conta 6239 osservazioni, tuttavia 141 famiglie non hanno
+risposto ad almeno una domanda. Per il momento vado a creare un nuovo
+dataframe con le 6098 osservazioni complete, poi si potrà fare una
+valutazione sulle osservazioni mancanti.</p>
+<pre class="r"><code>df &lt;-  myframe[complete.cases(myframe), ]</code></pre>
 </div>
 
 

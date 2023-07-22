@@ -62,3 +62,29 @@ Summary del dataset:
 df.sum
 ```
 
+Il dataframe conta 6239 osservazioni, tuttavia 141 famiglie non hanno risposto ad almeno una domanda.
+Per il momento vado a creare un nuovo dataframe con le 6098 osservazioni complete, poi si potrà fare una valutazione sulle osservazioni mancanti.
+```{r, include = T, echo = T}
+df <-  myframe[complete.cases(myframe), ]
+```
+
+```{r, include = T, echo = F}
+# Devo riaggiungere queste variabili
+
+# Creo la variabile valore degli oggetti di lusso
+df$VALUX <- df$VALOGG + df$VALCAR + df$VALMEZ + df$VALCA
+
+# Creo la variabile consumo
+df$CONSUMO <- df$CIBINT + df$CIBEST + df$BOLLETTE + df$VIAGGI + df$ALTCONS
+
+# Creo la variabile proporzione di lavoratori per nucleo
+df$PROLAV <- df$OCC/df$NCOMP
+
+# Creo la variabile proporzione di cibo consumata fuori casa
+df$PROCIB <- df$CIBEST / (df$CIBEST + df$CIBINT)
+
+# Creo la variabile proporzione di lavoratori e pensionati (percettori di soldi)
+df$PRORED <- (df$OCC + df$PENS) / df$NCOMP
+
+```
+

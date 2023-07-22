@@ -224,7 +224,6 @@ rm(all_vars)
 # Creo il dataframe senza gli NA 
 df <-  myframe[complete.cases(myframe), ]
 # In seguito considerazioni sulla rimozione dei dati
-df.sum <- summary(df)
 
 # Costruisco variabili che mi torneranno utili
 
@@ -242,6 +241,9 @@ df$PROCIB <- df$CIBEST / (df$CIBEST + df$CIBINT)
 
 # Creo la variabile proporzione di lavoratori e pensionati (percettori di soldi)
 df$PRORED <- (df$OCC + df$PENS) / df$NCOMP
+
+df.sum <- summary(df)
+
 
 # Faccio un campione dei dati per le funzioni particolarmente pesanti
 # Così evito tentativi inutili troppo lunghi
