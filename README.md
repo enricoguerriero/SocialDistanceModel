@@ -48,6 +48,7 @@ Alle tabelle sono state applicate aggregazioni e trasformazioni, al fine di otte
 
 ```{r SourceData, include = T, echo = F}
 source("DataLibrary.R")
+df.sum
 ```
 
 
