@@ -196,12 +196,38 @@ myframe$IND <- agg_df$IND
 myframe$DIS <- agg_df$DIS
 myframe$PENS <- agg_df$PENS
 
-df <- myframe
 # Salvo le variabili che mi interessano per alleggerire il workspace
-vars_to_keep <- c("df")
+vars_to_keep <- c("myframe")
 # lista di tutte le variabili nel workspace
 all_vars <- ls()
 # rimuovi tutte le variabili tranne quelle da mantenere
 rm(list = setdiff(all_vars, vars_to_keep))
 rm(all_vars)
 
+# Creo il dataframe senza gli NA 
+df <-  BdI[complete.cases(myframe), ]
+# In seguito considerazioni sulla rimozione dei dati
+df.sum <- summary(df)
+
+# Costruisco variabili che mi torneranno utili
+
+# Creo la variabile valore degli oggetti di lusso
+df$VALUX <- df$VALOGG + df$VALCAR + df$VALMEZ + df$VALCA
+
+# Creo la variabile consumo
+df$CONSUMO <- df$CIBINT + df$CIBEST + df$BOLLETTE + df$VIAGGI + df$ALTCONS
+
+# Creo la variabile proporzione di lavoratori per nucleo
+df$PROLAV <- df$OCC/df$NCOMP
+
+# Creo la variabile proporzione di cibo consumata fuori casa
+df$PROCIB <- df$CIBEST / (df$CIBEST + df$CIBINT)
+
+# Creo la variabile proporzione di lavoratori e pensionati (percettori di soldi)
+df$PRORED <- (df$OCC + df$PENS) / df$NCOMP
+
+# Faccio un campione dei dati per le funzioni particolarmente pesanti
+# Così evito tentativi inutili troppo lunghi
+set.seed(69)
+# Il campione ha livello di confidenza 95% e margine di errore 5% (surveymonkey)
+df_sample <- df %>% sample_n(size = 391)
