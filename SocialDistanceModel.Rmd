@@ -130,7 +130,9 @@ plot_grid(cibint.plot, cibint.plot.95,
           altcons.plot, altcons.plot.95,
           ncol = 2)
 ```
+
 Per le prossime due variabili invece seguono i grafici completi a sinistra e privi del primo e ultimo percentile a destra, poiché sono state date risposte assurde e in questo modo vengono "pulite" (es. gente che dice che sono sufficienti 0 o 30000 euro al mese per vivere ma senza lussi):
+
 ```{r, include = T, echo = F}
 plot_grid(soldmens.plot, soldmens.plot.98,
           redperc.plot, redperc.plot.98,
@@ -161,3 +163,25 @@ plot_grid(consumo.plot, homeval.plot,
           prolav.plot, prored.plot)
 ```
 
+
+### Analisi Multivariata
+
+Analisi mirata a vedere il comportamento delle variabili in relazione alla variabile CONSUMO, variabile risposta per questo studio, e tra loro, in vista della definizione di una distanza.
+
+Si parte con la visualizzazione del correlogramma:
+```{r, include = T, echo = F}
+corplot
+```
+
+C'è un evidente problema di sovrabbondanza di variabili, per visualizzare più facilmente le correlazioni il dataset viene diviso in sottoinsiemi, ciascuno contenente la variabile consumo poiché siamo interessati principalmente a lei:
+
+```{r, include = T, echo = F}
+corplot1
+cor1
+corplot2
+cor2
+corplot3
+cor3
+```
+
+Questi correlogrammi sono molto più leggibili ed emerge immediatamente la buona correlazione del consumo con tutte le variabili. Sebbene questi correlogrammi siano, per l'appunto, migliori, si mantiene anche il primo perché comunque dà un quadro generale su tutte le correlazioni tra le esplicative, informazioni che vanno a perdersi nei sottoinsiemi qualora due variabili non appartengano allo stesso.
