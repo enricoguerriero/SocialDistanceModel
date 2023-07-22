@@ -47,11 +47,15 @@ Alle tabelle sono state applicate aggregazioni e trasformazioni, al fine di otte
 * VARCONAL: Variazione dei consumi alimentari della famiglia nel 2020.
 * SEX: Proporzione di maschi nella famiglia.
 * STUDIO: Il titolo di studio maggiore conseguito tra i membri della famiglia (da 1 a 8, ordinata).
-* OCC: Proporzione di occupati nella famiglia.
-* DIP: Proporzione di lavoratori dipendenti nella famiglia.
-* IND: Proporzione di lavoratori indipendenti nella famiglia.
-* DIS: Proporzione di disoccupati nella famiglia.
-* PENS: Proporzione di pensionati nella famiglia.
+* OCC: Numero di occupati nella famiglia.
+* DIP: Numero di lavoratori dipendenti nella famiglia.
+* IND: Numero di lavoratori indipendenti nella famiglia.
+* DIS: Numero di disoccupati nella famiglia.
+* PENS: Numero di pensionati nella famiglia.
+* VALUX: Valore totale degli oggetti di lusso.
+* PROLAV: Proporzione di lavoratori nella famiglia.
+* PROCIB: Proporzione di cibo consumato fuori casa.
+* PRORED: Proporzione di componenti che percepiscono un reddito.
 </ul>
 
 ```{r, include = F}
@@ -86,5 +90,36 @@ df$PROCIB <- df$CIBEST / (df$CIBEST + df$CIBINT)
 # Creo la variabile proporzione di lavoratori e pensionati (percettori di soldi)
 df$PRORED <- (df$OCC + df$PENS) / df$NCOMP
 
+```
+
+
+## Analisi Descrittiva del Dataset 
+
+Prima della costruzione dei modelli si procede con una breve analisi esplorativa dei dati, al fine di avere una visione più chiara sul fenomeno da studiare.
+
+```{r SourceEspl, include=T, echo = F}
+source("AnalisiEsplorativa.R")
+```
+
+### Analisi Univariata
+
+Si visualizzano le frequenze delle variabili discrete:
+
+```{r, include = T, echo = F}
+plot_grid(ncomp.plot, happy.plot, studio.plot,
+          occ.plot, dip.plot, ind.plot,
+          dis.plot, pens.plot, finmes.plot,
+          ncol = 3, nrow = 3)
+```
+
+Adesso si visualizzano le variabili continue;
+si parte dalle variabili che indicano il valore degli oggetti, a sinistra i grafici indicanti la distribuzione effettiva, a destra con la distribuzione escludendo gli ultimi 5 percentili:
+
+```{r, include= T, echo = F}
+plot_grid(valogg.plot, valogg.plot.95, 
+          valcar.plot, valcar.plot.95, 
+          valmez.plot, valmez.plot.95, 
+          valca.plot, valca.plot.95, 
+          ncol = 2)
 ```
 

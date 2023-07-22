@@ -37,7 +37,7 @@ occ.plot <- ggplot(data = df, aes(x = factor(OCC), fill = factor(OCC))) +
     geom_bar(col = "black") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Occupati per nucleo familiare", y = "Frequenza") +
+    labs(x = "Numero di occupati", y = "Frequenza") +
     scale_x_discrete(breaks = 0:6, limits = factor(0:6)) 
 
 # DIP
@@ -45,7 +45,7 @@ dip.plot <- ggplot(data = df, aes(x = factor(DIP), fill = factor(DIP))) +
     geom_bar(col = "black") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Lavoratori dipendenti per nucleo familiare", y = "Frequenza") +
+    labs(x = "Lavoratori dipendenti", y = "Frequenza") +
     scale_x_discrete(breaks = 0:5, limits = factor(0:5)) 
 
 # IND
@@ -53,7 +53,7 @@ ind.plot <- ggplot(data = df, aes(x = factor(IND), fill = factor(IND))) +
     geom_bar(col = "black") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Lavoratori indipendenti per nucleo familiare", y = "Frequenza") +
+    labs(x = "Lavoratori indipendenti", y = "Frequenza") +
     scale_x_discrete(breaks = 0:5, limits = factor(0:5)) 
 
 # DIS
@@ -61,7 +61,7 @@ dis.plot <- ggplot(data = df, aes(x = factor(DIS), fill = factor(DIS))) +
     geom_bar(col = "black") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Disoccupati per nucleo familiare", y = "Frequenza") +
+    labs(x = "Numero di disoccupati", y = "Frequenza") +
     scale_x_discrete(breaks = 0:6, limits = factor(0:6)) 
 
 # PENS
@@ -69,7 +69,7 @@ pens.plot <- ggplot(data = df, aes(x = factor(PENS), fill = factor(PENS))) +
     geom_bar(col = "black") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Pensionati per nucleo familiare", y = "Frequenza") +
+    labs(x = "Numero di pensionati", y = "Frequenza") +
     scale_x_discrete(breaks = 0:3, limits = factor(0:3)) 
 
 # FINMES
@@ -77,7 +77,7 @@ finmes.plot <- ggplot(data = df, aes(x = factor(FINMES), fill = factor(FINMES)))
     geom_bar(col = "black") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Facilità ad arrivare a fine mese", y = "Frequenza") +
+    labs(x = "Facilità arrivare a fine mese", y = "Frequenza") +
     scale_x_discrete(breaks = 1:6, limits = factor(1:6)) 
 
 # Histograms (variabili continue)
@@ -86,13 +86,13 @@ finmes.plot <- ggplot(data = df, aes(x = factor(FINMES), fill = factor(FINMES)))
 valogg.plot <- ggplot(data = df, aes(x = VALOGG)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Valore oggetti (?)", y = "Frequenza")
+    labs(x = "Valore oggetti di valore", y = "Frequenza")
 # Tolgo ultimi 5 percentili per visualizzare meglio distribuzione
 valogg.plot.95 <- ggplot(data = df[df$VALOGG < quantile(df$VALOGG, probs = 0.95),], 
                          aes(x = VALCAR)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Valore oggetti (?)", y = "Frequenza")
+    labs(x = "Valore oggetti di valore", y = "Frequenza")
 
 # VALCAR
 valcar.plot <- ggplot(data = df, aes(x = VALCAR)) +
@@ -122,13 +122,13 @@ valmez.plot.95 <- ggplot(data = df[df$VALMEZ < quantile(df$VALMEZ, probs = 0.95)
 valca.plot <- ggplot(data = df, aes(x = VALCA)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Valore qualcosa (?)", y = "Frequenza")
+    labs(x = "Valore oggetti di casa", y = "Frequenza")
 # Tolgo ultimi 5 percentili per visualizzare meglio distribuzione
 valca.plot.95 <- ggplot(data = df[df$VALCA < quantile(df$VALCA, probs = 0.95),], 
                          aes(x = VALCA)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Valore qualcosa (?)", y = "Frequenza")
+    labs(x = "Valore oggetti di casa", y = "Frequenza")
 
 # CIBINT
 cibint.plot <- ggplot(data = df, aes(x = CIBINT)) +
