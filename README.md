@@ -46,7 +46,7 @@ Alle tabelle sono state applicate aggregazioni e trasformazioni, al fine di otte
 - DIS: Proporzione di disoccupati nella famiglia.
 - PENS: Proporzione di pensionati nella famiglia.
 
-```{r}
+```{r SourceData, include = T, echo = F}
 source("DataLibrary.R")
 ```
 
