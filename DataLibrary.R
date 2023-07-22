@@ -28,14 +28,14 @@ Q20F  <- read.csv("data/q20f.csv")
 Q20G  <- read.csv("data/q20g.csv")
 
 # Merge rispetto al numero del questionario
-df2 <- merge(Q20A, Q20B, Q20C1, Q20C2, Q20D, Q20E, Q20F, Q20G, by = "NQUEST")
+df2 <- cbind(Q20A, Q20B, Q20C1, Q20C2, Q20D, Q20E, Q20F, Q20G)
 
 # Database riferito agli individui
-df1  <- read.csv("C:/Users/enric/Desktop/Tesi/data/carcom20.csv")
+df1  <- read.csv("data/carcom20.csv")
 
 # Creo un dataframe con le variabili di interesse
 myframe <- df2[,c("NQUEST", "NCOMP", "VARRED", "VARREDA", "VARREDB", "VARREDFINE", "VARREDFINEA", "VARREDFINEB", "ACQUI1", "ACQUISA", "ACQUI21", "ACQUISB1",
-                  "ACQUI22", "ACQUISB2", "ACQUI3", "ACQUISC", "VEND1", "VENDA", "VEND21", "VENDB2", "JWOVAT", "JWDURAT1A", "JWDURAT1B", "JWDURAT2", "JCONSALC2",
+                  "ACQUI22", "ACQUISB2", "ACQUI3", "ACQUISC", "VEND1", "VENDA", "VEND21", "VEND22", "VENDB1", "VENDB2", "JWOVAT", "JWDURAT1A", "JWDURAT1B", "JWDURAT2", "JCONSALC2",
                   "JCONSALF2", "BOLLETTE", "VIAGGI", "VIAGGIT", "CONS2", "VARCONS", "VARCONSA", "VARCONSB", "VARCONSALIM", "VARCONSALIMA", "VARCONSALIMB",
                   "POVLIN", "CONDGEN", "HAPPY", "VALABIT")]
 
@@ -57,6 +57,9 @@ for (i in seq_along(myframe$NQUEST)) {
     }
   }
 }
+# Rimuovo le colonne che non servono più
+myframe <- subset(myframe, select=-c(VARRED, VARREDA, VARREDB))
+
 # Creo una variabile che indica quanto le famiglie pensano varierÃ  il loro reddito nell'anno successivo
 myframe$REDPERCFINE <- rep(0,length(myframe$NQUEST))
 for (i in seq_along(myframe$NQUEST)) {
@@ -74,7 +77,8 @@ for (i in seq_along(myframe$NQUEST)) {
     }
   }
 }
-
+# Rimuovo le colonne che non servono più
+myframe <- subset(myframe, select=-c(VARREDFINE, VARREDFINEA, VARREDFINEB))
 
 # Creo una nuova variabile che rappresenta l'acquisto meno la vendita di oggetti preziosi
 myframe$VAROGG <- rep(0,length(myframe$NQUEST))
@@ -91,6 +95,8 @@ for (i in 1:length(myframe$NQUEST)){
     }
   }
 }
+# Rimuovo le colonne che non servono più
+myframe <- subset(myframe, select=-c(ACQUI1, VEND1, ACQUISA, VENDA))
 
 # Creo una nuova variabile che rappresenta l'acquisto meno la vendita di macchine
 myframe$VARCAR <- rep(0,length(myframe$NQUEST))
@@ -107,6 +113,8 @@ for (i in 1:length(myframe$NQUEST)){
     }
   }
 }
+# Rimuovo le colonne che non servono più
+myframe <- subset(myframe, select=-c(ACQUI21, ACQUISB1, VEND21, VENDB1))
 
 # Creo una nuova variabile che rappresenta l'acquisto meno la vendita di altri mezzi di trasporto
 myframe$VARMEZ <- rep(0,length(myframe$NQUEST))
@@ -123,17 +131,22 @@ for (i in 1:length(myframe$NQUEST)){
     }
   }
 }
+# Rimuovo le colonne che non servono più
+myframe <- subset(myframe, select=-c(ACQUI22, ACQUISB2, VEND22, VENDB2))
 
 # Cambio i nomi di un po' di variabili
 myframe$VARCA <- myframe$ACQUISC
+myframe <- subset(myframe, select= -c(ACQUISC, ACQUI3))
 myframe$VARCA[is.na(myframe$VARCA)] <- 0
+myframe$VIAGGI <- myframe$VIAGGIT
+myframe$VIAGGI[is.na(myframe$VIAGGI)] <- 0
+myframe <- subset(myframe, select= -VIAGGIT)
 names(myframe)[names(myframe) == "JWOVAT"] <- "VALOGG"
 names(myframe)[names(myframe) == "JWDURAT1A"] <- "VALCAR"
 names(myframe)[names(myframe) == "JWDURAT1B"] <- "VALMEZ"
 names(myframe)[names(myframe) == "JWDURAT2"] <- "VALCA"
 names(myframe)[names(myframe) == "JCONSALC2"] <- "CIBINT"
 names(myframe)[names(myframe) == "JCONSALF2"] <- "CIBEST"
-names(myframe)[names(myframe) == "v"] <- "VIAGGI"
 names(myframe)[names(myframe) == "CONS2"] <- "ALTCONS"
 names(myframe)[names(myframe) == "POVLIN"] <- "SOLDMENS"
 names(myframe)[names(myframe) == "CONDGEN"] <- "FINMES"
@@ -157,6 +170,8 @@ for (i in seq_along(myframe$NQUEST)) {
     }
   }
 }
+# Rimuovo le colonne che non servono più
+myframe <- subset(myframe, select=-c(VARCONS, VARCONSA, VARCONSB))
 
 # Faccio la stessa cosa per i consumi alimentari
 myframe$VARCONAL <- rep(0,length(myframe$NQUEST))
@@ -175,6 +190,8 @@ for (i in seq_along(myframe$NQUEST)) {
     }
   }
 }
+# Rimuovo le colonne che non servono più
+myframe <- subset(myframe, select=-c(VARCONSALIM, VARCONSALIMA, VARCONSALIMB))
 
 # Aggrego per famiglia i dati del df1 che sono personali
 # La variabile sesso diventa la proporzione maschile nella famiglia
@@ -205,7 +222,7 @@ rm(list = setdiff(all_vars, vars_to_keep))
 rm(all_vars)
 
 # Creo il dataframe senza gli NA 
-df <-  BdI[complete.cases(myframe), ]
+df <-  myframe[complete.cases(myframe), ]
 # In seguito considerazioni sulla rimozione dei dati
 df.sum <- summary(df)
 
@@ -231,3 +248,4 @@ df$PRORED <- (df$OCC + df$PENS) / df$NCOMP
 set.seed(69)
 # Il campione ha livello di confidenza 95% e margine di errore 5% (surveymonkey)
 df_sample <- df %>% sample_n(size = 391)
+
