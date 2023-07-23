@@ -185,3 +185,17 @@ cor3
 ```
 
 Questi correlogrammi sono molto più leggibili ed emerge immediatamente la buona correlazione del consumo con tutte le variabili. Sebbene questi correlogrammi siano, per l'appunto, migliori, si mantiene anche il primo perché comunque dà un quadro generale su tutte le correlazioni tra le esplicative, informazioni che vanno a perdersi nei sottoinsiemi qualora due variabili non appartengano allo stesso.
+
+Seguono tutti gli scatterplot tra la variabile consumo e ciascuna esplicativa:
+```{r, include=T, echo = F}
+plot_grid(c.ncomp, c.sex, c.studio, c.occ,
+          c.dip, c.ind, c.dis, c.pens,
+          ncol = 4)
+plot_grid(c.cibint, c.cibest, c.bollette, c.altcons,
+          c.varogg, c.varcar, c.varmez, c.viaggi,
+          ncol = 4)
+plot_grid(c.varconal, c.homeval, c.valux,
+          c.valca, c.valmez, c.valogg,
+          ncol = 3)
+```
+

@@ -339,3 +339,103 @@ corplot3 <- ggcorrplot(cor(df3))
 cor3 <- cor(df$CONSUMO, df[,c("CIBINT", "CIBEST", "BOLLETTE", "ALTCONS", "VAROGG",
                               "VARCAR", "VARMEZ", "VIAGGI", "VARCONAL")])
 
+# Vediamo gli scatterplot di tutte le variabili con il consumo
+c.ncomp <- ggplot(data = df, aes(x = NCOMP, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.valogg <- ggplot(data = df, aes(x = VALOGG, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.valcar <- ggplot(data = df, aes(x = VALCAR, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.valmez <- ggplot(data = df, aes(x = VALMEZ, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.valca <- ggplot(data = df, aes(x = VALCA, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.cibint <- ggplot(data = df, aes(x = CIBINT, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.cibest <- ggplot(data = df, aes(x = CIBEST, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.bollette <- ggplot(data = df, aes(x = BOLLETTE, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.viaggi <- ggplot(data = df, aes(x = VIAGGI, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.altcons <- ggplot(data = df, aes(x = ALTCONS, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.soldmens <- ggplot(data = df, aes(x = SOLDMENS, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.finmes <- ggplot(data = df, aes(x = FINMES, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.happy <- ggplot(data = df, aes(x = HAPPY, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.homeval <- ggplot(data = df, aes(x = HOMEVAL, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.redperc <- ggplot(data = df, aes(x = REDPERC, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.redpercfine <- ggplot(data = df, aes(x = REDPERCFINE, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.varogg <- ggplot(data = df, aes(x = VAROGG, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.varcar <- ggplot(data = df, aes(x = VARCAR, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.varmez <- ggplot(data = df, aes(x = VARMEZ, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.varca <- ggplot(data = df, aes(x = VARCA, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.varcon <- ggplot(data = df, aes(x = VARCON, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.varconal <- ggplot(data = df, aes(x = VARCONAL, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.sex <- ggplot(data = df, aes(x = SEX, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.studio <- ggplot(data = df, aes(x = STUDIO, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.occ <- ggplot(data = df, aes(x = OCC, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.dip <- ggplot(data = df, aes(x = DIP, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.ind <- ggplot(data = df, aes(x = IND, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.pens <- ggplot(data = df, aes(x = PENS, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.dis <- ggplot(data = df, aes(x = DIS, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.prolav <- ggplot(data = df, aes(x = PROLAV, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.procib <- ggplot(data = df, aes(x = PROCIB, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.prored <- ggplot(data = df, aes(x = PRORED, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
+c.valux <- ggplot(data = df, aes(x = VALUX, y = CONSUMO)) +
+    geom_point() +
+    theme_bw() 
