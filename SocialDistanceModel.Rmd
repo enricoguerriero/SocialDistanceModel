@@ -199,3 +199,5 @@ plot_grid(c.varconal, c.homeval, c.valux,
           ncol = 3)
 ```
 
+## Costruzione dei modelli
+

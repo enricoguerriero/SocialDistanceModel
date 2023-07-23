@@ -439,3 +439,16 @@ c.prored <- ggplot(data = df, aes(x = PRORED, y = CONSUMO)) +
 c.valux <- ggplot(data = df, aes(x = VALUX, y = CONSUMO)) +
     geom_point() +
     theme_bw() 
+
+# Nell'analisi descrittiva guardo anche la distanza di mahalanobis
+# Così, giusto perché si parla di distanza
+
+# Non funziona perché il reciproco di alcuni valori è singolare
+# Non era importante, lascio qui così in seguito eventualmente correggerò
+mah_dist <- mahalanobis(df, center = colMeans(df), cov = cov(df))
+plot_mahConsumo <- ggplot(df, aes(x = mah_dist, y = CONSUMO)) +
+    geom_point(alpha = 0.7)  +
+    xlab("Distanza di Mahalanobis dal centro") +
+    ylab("Consumo") +
+    ggtitle("Grafico di prova") +
+    theme_bw()
