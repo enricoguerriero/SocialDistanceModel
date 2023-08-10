@@ -17,6 +17,8 @@ library(sphet)
 library(scales)
 library(cluster)
 library(cowplot)
+library(sf)
+library(grid)
 
 # Scarico tutti i database
 Q20A  <- read.csv("data/q20a.csv")
