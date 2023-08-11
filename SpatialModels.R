@@ -296,21 +296,25 @@ plot_grid(title1, sc1, sc2, sc4,
 # Relazione molto plausibile tra le esplicative e la risposta
 
 
+# Passi 2, 3 e 4 effettuati preliminarmente con un campione dei dati
+# Estratto casualmente con livello di confidenza 95%
+
+
 # 2: Stima OLS: check diagnostico negli errori; sono spazialmente correlati? 
 # Cosa manca? SAR, SEM, SARMA
 
 # Costruzione del primo modello
-fit <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df)
+fit <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample)
 summary(fit)
 
-ggplot(data = df, aes(x = fitted.values(fit), y = resid(fit))) +
+ggplot(data = df_sample, aes(x = fitted.values(fit), y = resid(fit))) +
     geom_point(shape=1) +
     theme_bw() +
     xlab("Valori fittati") +
     ylab("Residui") +
     geom_hline(yintercept = 0, col = "black", lty = 2) +
     geom_smooth(se = F, method = 'loess', formula = 'y ~ x', lwd = 0.75, col = "red")
-ggplot(data = df, mapping = aes(resid(fit))) +
+ggplot(data = df_sample, mapping = aes(resid(fit))) +
     geom_histogram(aes(y =after_stat(density)),bins = 20, col = "black", fill = "yellow", alpha = 1) + 
     geom_density(linewidth = 0.8, fill = "pink", alpha = 0.3) +
     theme_bw() +
@@ -330,13 +334,16 @@ ggplot(data.frame(resid = rstandard(fit)),aes(sample = resid)) +
 
 # Prima costruisco un modello SARAR
 # Per farlo ho bisogno della matrice dei pesi
-weight.list <- w_list_create(df[,c("STUDIO", "VALUX", "HOMEVAL")]) 
+weight.list <- w_list_create(df_sample[,c("STUDIO", "VALUX", "HOMEVAL")]) 
 # Modello:
-sarar.fit <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
+sarar.fit <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample, listw = weight.list)
 
 # Effettuo il primo test: SARMA
 # Questo tipo di test mi dice se c'è evidenza di un effetto spaziale o meno
-lm.LMtests(model = sarar.fit, listw = weight.list, test = "SARMA")
+lm.LMtests(model = fit, listw = weight.list, test = "SARMA")
+# L'ipotesi nulla del test SARMA è che entrambi i coefficienti spaziali siano uguali a 0
+# Ci troviamo davanti ad un p-value di 0.9195, pertanto è impossibile non rifiutare l'ipotesi nulla
+
 
 
 # 4: Stima dell'opportuno modello spaziale e discussione
