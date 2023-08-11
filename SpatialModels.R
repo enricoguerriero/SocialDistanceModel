@@ -325,7 +325,18 @@ ggplot(data.frame(resid = rstandard(fit)),aes(sample = resid)) +
 # Guardando i residui sembra che le variabili descrivano la risposta
 # Tuttavia è evidente che ci sia un effetto nel consumo che chiaramente non è descritto dal modello
 
+
 # 3: Specificazione del modello con test RLM
+
+# Prima costruisco un modello SARAR
+# Per farlo ho bisogno della matrice dei pesi
+weight.list <- w_list_create(df[,c("STUDIO", "VALUX", "HOMEVAL")]) 
+# Modello:
+sarar.fit <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
+
+# Effettuo il primo test: SARMA
+# Questo tipo di test mi dice se c'è evidenza di un effetto spaziale o meno
+lm.LMtests(model = sarar.fit, listw = weight.list, test = "SARMA")
 
 
 # 4: Stima dell'opportuno modello spaziale e discussione
