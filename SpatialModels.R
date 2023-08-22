@@ -17,7 +17,7 @@ w_list_create <- function(df) {
     # Trasformo il df in matrice delle distanze
     w_mat <- as.matrix(dist(df))
     # Mi prendo il valore del decimo percentile
-    qu <- quantile(w_mat, 0.05)
+    qu <- quantile(w_mat, 0.005)
     # Faccio sì che nessun osservazione sia lontana dalle altre più di questo percentile
     w_mat[w_mat > qu] <- qu
     # Creo una matrice delle vicinanze in questo modo
@@ -28,12 +28,32 @@ w_list_create <- function(df) {
     diag(w_mat) <- 0
     # Porto tutti i valori di vicinanza tra 0 e 1 con rescale
     w_mat <- apply(w_mat, 1, rescale)
+    # Faccio sì che tutte le righe della matrice sommino a 1
+    w_mat <- t(t(w_mat)/rowSums(w_mat))
     # Trasformo la matrice in una lista di pesi
     w_list <- mat2listw(w_mat, style = "W")
     # Fine!
     return(w_list)
 }
 
+# La funzione prende in input un dataframe e da in output la matrice dei pesi sotto forma di lista
+w_list_create_2 <- function(df) {
+    # Trasformo il df in matrice delle distanze
+    mat <- w_mat <- as.matrix(dist(df))
+    # Mi prendo il valore del decimo percentile
+    qu <- quantile(w_mat, 0.01)
+    # Tutti i valori più vicini di questo percentile valgono 1
+    w_mat[mat < qu] <- 1
+    w_mat[mat > qu] <- 0
+    # La diagonale è 0 perché ogni osservazione non è vicina con se stessa
+    diag(w_mat) <- 0
+    # Faccio sì che tutte le righe della matrice sommino a 1
+    w_mat <- t(t(w_mat)/rowSums(w_mat))
+    # Trasformo la matrice in una lista di pesi
+    w_list <- mat2listw(w_mat, style = "W")
+    # Fine!
+    return(w_list)
+}
 
 
 # Procedimento per passi secondo quanto appreso al colloquio:
@@ -304,23 +324,24 @@ plot_grid(title1, sc1, sc2, sc4,
 # Cosa manca? SAR, SEM, SARMA
 
 # Costruzione del primo modello
-fit <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample)
-summary(fit)
+fit.sample <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample)
+summary(fit.sample)
 
-ggplot(data = df_sample, aes(x = fitted.values(fit), y = resid(fit))) +
+ggplot(data = df_sample, aes(x = fitted.values(fit.sample), y = resid(fit.sample))) +
     geom_point(shape=1) +
     theme_bw() +
     xlab("Valori fittati") +
     ylab("Residui") +
     geom_hline(yintercept = 0, col = "black", lty = 2) +
     geom_smooth(se = F, method = 'loess', formula = 'y ~ x', lwd = 0.75, col = "red")
-ggplot(data = df_sample, mapping = aes(resid(fit))) +
-    geom_histogram(aes(y =after_stat(density)),bins = 20, col = "black", fill = "yellow", alpha = 1) + 
+ggplot(data = df_sample, mapping = aes(resid(fit.sample))) +
+    geom_histogram(aes(y =after_stat(density)),
+                   bins = 20, col = "black", fill = "yellow", alpha = 1) + 
     geom_density(linewidth = 0.8, fill = "pink", alpha = 0.3) +
     theme_bw() +
     xlab("Residui") +
     ylab("Densità")
-ggplot(data.frame(resid = rstandard(fit)),aes(sample = resid)) + 
+ggplot(data.frame(resid = rstandard(fit.sample)),aes(sample = resid)) + 
     stat_qq(shape=1) +
     stat_qq_line(color = "red", linewidth = 1) +
     theme_bw() +
@@ -334,16 +355,54 @@ ggplot(data.frame(resid = rstandard(fit)),aes(sample = resid)) +
 
 # Prima costruisco un modello SARAR
 # Per farlo ho bisogno della matrice dei pesi
-weight.list <- w_list_create(df_sample[,c("STUDIO", "VALUX", "HOMEVAL")]) 
+weight.list.sample <- w_list_create(df_sample[,c("STUDIO", "VALUX", "HOMEVAL")]) 
 # Modello:
-sarar.fit <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample, listw = weight.list)
+sarar.fit.sample <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
+                      listw = weight.list.sample,
+                      tol.solve = 1e-8)
+# La funzione non funziona
+
+# Provo a costruire gli altri due modelli per vedere se funziona
+err.fit.sample <- errorsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
+                      listw = weight.list.sample)
+lag.fit.sample <- lagsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
+                    listw = weight.list.sample)
+# Non funzionano neanche queste
+
+# Tentativo con il metodo alternativo di calcolo della distanza 
+weight.list.sample.2 <- w_list_create_2(df_sample[,c("STUDIO", "VALUX", "HOMEVAL")]) 
 
 # Effettuo il primo test: SARMA
 # Questo tipo di test mi dice se c'è evidenza di un effetto spaziale o meno
-lm.LMtests(model = fit, listw = weight.list, test = "SARMA")
+lm.LMtests(model = fit.sample, listw = weight.list.sample, test = "SARMA")
 # L'ipotesi nulla del test SARMA è che entrambi i coefficienti spaziali siano uguali a 0
 # Ci troviamo davanti ad un p-value di 0.9195, pertanto è impossibile non rifiutare l'ipotesi nulla
 
+# FORSE le funzioni non funzionano perché ci sono pochi dati, runno i 3 modelli su tutto il df
+weight.list <- w_list_create(df[,c("STUDIO", "VALUX", "HOMEVAL")]) 
+sarar.fit <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list,
+                      tol.solve = 1e-8)
+err.fit <- errorsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
+lag.fit <- lagsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
+# Invece nemmeno questi funzionano
 
+# Modello con tutto il dataset
+fit <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df)
+
+# Test di moran sulla dipendenza spaziale del dataset
+lm.LMtests(model = fit, listw = weight.list, test = "LMerr")
+lm.LMtests(model = fit, listw = weight.list, test = "LMlag")
+lm.LMtests(model = fit, listw = weight.list, test = "RLMerr")
+lm.LMtests(model = fit, listw = weight.list, test = "RLMlag")
+lm.LMtests(model = fit, listw = weight.list, test = "SARMA")
+
+# Proviamo a fare i Moran's plot
+moran.plot(df$CONSUMO, listw = weight.list)
+# Con il campione perché con tutti i dati risulta caotico
+moran.plot(df_sample$CONSUMO, listw = weight.list.sample)
+
+# Prova con un modello più leggero
+lag.fit <- lagsarlm(CONSUMO ~ HOMEVAL, data = df, listw = weight.list, tol.solve = 1e-8)
 
 # 4: Stima dell'opportuno modello spaziale e discussione
+
