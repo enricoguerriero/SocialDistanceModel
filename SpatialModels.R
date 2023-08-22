@@ -406,3 +406,8 @@ lag.fit <- lagsarlm(CONSUMO ~ HOMEVAL, data = df, listw = weight.list, tol.solve
 
 # 4: Stima dell'opportuno modello spaziale e discussione
 
+
+
+
+
+
