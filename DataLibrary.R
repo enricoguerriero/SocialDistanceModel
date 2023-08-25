@@ -247,10 +247,3 @@ df$PRORED <- (df$OCC + df$PENS) / df$NCOMP
 
 df.sum <- summary(df)
 
-
-# Faccio un campione dei dati per le funzioni particolarmente pesanti
-# Così evito tentativi inutili troppo lunghi
-set.seed(69)
-# Il campione ha livello di confidenza 95% e margine di errore 5% (surveymonkey)
-df_sample <- df %>% sample_n(size = 391)
-

@@ -49,17 +49,129 @@ w_list_create_2 <- function(df) {
     diag(w_mat) <- 0
     # Faccio sì che tutte le righe della matrice sommino a 1
     w_mat <- t(t(w_mat)/rowSums(w_mat))
+    # Devo correggere gli na generati nelle righe con 0 interazioni
+    mydf[is.na(mydf)] <- 0
     # Trasformo la matrice in una lista di pesi
     w_list <- mat2listw(w_mat, style = "W")
     # Fine!
     return(w_list)
 }
 
+w_list_create_class <- function(mydf) {
+    # Voglio che ogni osservazione uguale ad un'altra abbia 1 come vicinanza, le altre 0
+    mat <- outer(1:nrow(mydf), 1:nrow(mydf), Vectorize(function(i, j) {
+        all(mydf[i, ] == mydf[j, ])
+    }))  
+    # ho una matrice logica, devo trasformarla in numerica
+    w_mat <- as.numeric(mat)
+    dim(w_mat) <- dim(mat)
+    # La diagonale è 0 perché ogni osservazione non è vicina con se stessa
+    diag(w_mat) <- 0
+    # Piccolo check del df
+    if (any(is.na(w_mat))) {
+        stop("The matrix contains NA values.")
+    }
+    if (any(w_mat < 0)) {
+        stop("The matrix contains negative values.")
+    }
+    # Faccio sì che tutte le righe della matrice sommino a 1
+    w_mat <- t(t(w_mat)/rowSums(w_mat))
+    # Devo correggere gli na generati nelle righe con 0 interazioni
+    w_mat[is.nan(w_mat)] <- 0
+    # Trasformo la matrice in una lista di pesi
+    w_list <- spdep::mat2listw(w_mat, style = "W")
+    # Fine!
+    return(w_list)
+}
+
+
+w_list_create_class_2 <- function(v) {
+    # Voglio che ogni osservazione uguale ad un'altra abbia 1 come vicinanza, le altre 0
+    mat <- matrix(0, nrow = length(v), ncol = length(v))
+    mat[which(v == 1), which(v == 1)] <- 1
+    mat[which(v == 2), which(v == 2)] <- 1
+    mat[which(v == 3), which(v == 3)] <- 1
+    mat[which(v == 4), which(v == 4)] <- 1
+    mat[which(v == 5), which(v == 5)] <- 1
+    mat[which(v == 6), which(v == 6)] <- 1
+    mat[which(v == 7), which(v == 7)] <- 1
+    mat[which(v == 8), which(v == 8)] <- 1
+    mat[which(v == 9), which(v == 9)] <- 1
+    mat[which(v == 10), which(v == 10)] <- 1
+    mat[which(v == 11), which(v == 11)] <- 1
+    mat[which(v == 12), which(v == 12)] <- 1
+    mat[which(v == 13), which(v == 13)] <- 1
+    mat[which(v == 14), which(v == 14)] <- 1
+    mat[which(v == 15), which(v == 15)] <- 1
+    mat[which(v == 16), which(v == 16)] <- 1
+    # ho una matrice logica, devo trasformarla in numerica
+    w_mat <- as.numeric(mat)
+    dim(w_mat) <- dim(mat)
+    # La diagonale è 0 perché ogni osservazione non è vicina con se stessa
+    diag(w_mat) <- 0
+    # Faccio sì che tutte le righe della matrice sommino a 1
+    w_mat <- t(t(w_mat)/rowSums(w_mat))
+    # Devo correggere gli na generati nelle righe con 0 interazioni
+    w_mat[is.nan(w_mat)] <- 0
+    # Trasformo la matrice in una lista di pesi
+    w_list <- spdep::mat2listw(w_mat, style = "W")
+    # Fine!
+    return(w_list)
+}
+
+
+# Per applicare questa funzione mi serve creare delle nuove variabili per il dataset
+# divise in classi
+df$c.STUDIO <- cut(df$STUDIO, breaks = c(0,2,4,6,8), 
+                   labels = c("low", "medium", "high", "HIGHEST"))
+ggplot(data = df, aes(x = c.STUDIO, fill = c.STUDIO)) +
+    geom_bar(col = "black") +
+    theme_classic()
+df$c.VALUX <- cut(df$VALUX, breaks = c(0,15000,30000,60000,4200000), 
+                   labels = c("low", "medium", "high", "HIGHEST"))
+ggplot(data = df, aes(x = c.VALUX, fill = c.VALUX)) +
+    geom_bar(col = "black") +
+    theme_classic()
+df$c.HOMEVAL <- cut(df$HOMEVAL, breaks = c(0,150000,300000,600000,5000000), 
+                   labels = c("low", "medium", "high", "HIGHEST"))
+ggplot(data = df, aes(x = c.HOMEVAL, fill = c.HOMEVAL)) +
+    geom_bar(col = "black") +
+    theme_classic()
+
+# La funzione è troppo lenta creo le classi a mano
+df$class <- 0
+df[df$c.STUDIO == "low" & df$c.VALUX == "low" & df$c.HOMEVAL == "low",]$class <- 1 
+df[df$c.STUDIO == "medium" & df$c.VALUX == "low" & df$c.HOMEVAL == "low",]$class <- 2 
+df[df$c.STUDIO == "high" & df$c.VALUX == "medium" & df$c.HOMEVAL == "low",]$class <- 3 
+df[df$c.STUDIO == "HIGHEST" & df$c.VALUX == "medium" & df$c.HOMEVAL == "low",]$class <- 4 
+df[df$c.STUDIO == "low" & df$c.VALUX == "high" & df$c.HOMEVAL == "medium",]$class <- 5
+df[df$c.STUDIO == "medium" & df$c.VALUX == "high" & df$c.HOMEVAL == "medium",]$class <- 6 
+df[df$c.STUDIO == "high" & df$c.VALUX == "HIGHEST" & df$c.HOMEVAL == "medium",]$class <- 7 
+df[df$c.STUDIO == "HIGHEST" & df$c.VALUX == "HIGHEST" & df$c.HOMEVAL == "medium",]$class <- 8 
+df[df$c.STUDIO == "low" & df$c.VALUX == "low" & df$c.HOMEVAL == "high",]$class <- 9
+df[df$c.STUDIO == "medium" & df$c.VALUX == "low" & df$c.HOMEVAL == "high",]$class <- 10 
+df[df$c.STUDIO == "high" & df$c.VALUX == "medium" & df$c.HOMEVAL == "high",]$class <- 11 
+df[df$c.STUDIO == "HIGHEST" & df$c.VALUX == "medium" & df$c.HOMEVAL == "high",]$class <- 12 
+#df[df$c.STUDIO == "low" & df$c.VALUX == "high" & df$c.HOMEVAL == "HIGHEST",]$class <- 13
+df[df$c.STUDIO == "medium" & df$c.VALUX == "high" & df$c.HOMEVAL == "HIGHEST",]$class <- 14 
+df[df$c.STUDIO == "high" & df$c.VALUX == "HIGHEST" & df$c.HOMEVAL == "HIGHEST",]$class <- 15 
+df[df$c.STUDIO == "HIGHEST" & df$c.VALUX == "HIGHEST" & df$c.HOMEVAL == "HIGHEST",]$class <- 16 
+
+
+# Faccio un campione dei dati per le funzioni particolarmente pesanti
+# CosÃ¬ evito tentativi inutili troppo lunghi
+set.seed(69)
+# Il campione ha livello di confidenza 95% e margine di errore 5% (surveymonkey)
+df_sample <- df %>% sample_n(size = 391)
+# Faccio un altro campione perché questo è troppo piccolo per alcune cose
+df_bigsample <- df %>% sample_n(size = 800)
+
+
 
 # Procedimento per passi secondo quanto appreso al colloquio:
 
 
-# 1: Test spaziale su y: esiste correlazione nella variabile dipendente?
+# 1: Test spaziale su y: esiste correlazione nella variabile dipendente? -----
 
 # Visualizzo la distribuzione della variabile risposta
 r1 <- ggplot(data = df, aes(y = CONSUMO)) +
@@ -320,7 +432,7 @@ plot_grid(title1, sc1, sc2, sc4,
 # Estratto casualmente con livello di confidenza 95%
 
 
-# 2: Stima OLS: check diagnostico negli errori; sono spazialmente correlati? 
+# 2: Stima OLS: check diagnostico negli errori; sono spazialmente correlati? -----
 # Cosa manca? SAR, SEM, SARMA
 
 # Costruzione del primo modello
@@ -351,40 +463,33 @@ ggplot(data.frame(resid = rstandard(fit.sample)),aes(sample = resid)) +
 # Tuttavia è evidente che ci sia un effetto nel consumo che chiaramente non è descritto dal modello
 
 
-# 3: Specificazione del modello con test RLM
+# 3: Specificazione del modello con test RLM -----
 
-# Prima costruisco un modello SARAR
 # Per farlo ho bisogno della matrice dei pesi
 weight.list.sample <- w_list_create(df_sample[,c("STUDIO", "VALUX", "HOMEVAL")]) 
-# Modello:
-sarar.fit.sample <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
-                      listw = weight.list.sample,
-                      tol.solve = 1e-8)
-# La funzione non funziona
-
-# Provo a costruire gli altri due modelli per vedere se funziona
-err.fit.sample <- errorsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
-                      listw = weight.list.sample)
-lag.fit.sample <- lagsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
-                    listw = weight.list.sample)
-# Non funzionano neanche queste
 
 # Tentativo con il metodo alternativo di calcolo della distanza 
 weight.list.sample.2 <- w_list_create_2(df_sample[,c("STUDIO", "VALUX", "HOMEVAL")]) 
 
+# Terza matrice dei pesi
+weight.list.class <- w_list_create_class_2(df$class)
+
 # Effettuo il primo test: SARMA
 # Questo tipo di test mi dice se c'è evidenza di un effetto spaziale o meno
 lm.LMtests(model = fit.sample, listw = weight.list.sample, test = "SARMA")
+lm.LMtests(model = fit.sample, listw = weight.list.sample, test = "LMerr")
+lm.LMtests(model = fit.sample, listw = weight.list.sample, test = "LMlag")
+lm.LMtests(model = fit.sample, listw = weight.list.sample, test = "RLMerr")
+lm.LMtests(model = fit.sample, listw = weight.list.sample, test = "RLMlag")
 # L'ipotesi nulla del test SARMA è che entrambi i coefficienti spaziali siano uguali a 0
 # Ci troviamo davanti ad un p-value di 0.9195, pertanto è impossibile non rifiutare l'ipotesi nulla
 
-# FORSE le funzioni non funzionano perché ci sono pochi dati, runno i 3 modelli su tutto il df
+
+# FAI TEST CON PIù NUMEROSITà CAMPIONARIE E PLOTTA TREND
+
+
+# Matrice dei pesi su tutto il db
 weight.list <- w_list_create(df[,c("STUDIO", "VALUX", "HOMEVAL")]) 
-sarar.fit <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list,
-                      tol.solve = 1e-8)
-err.fit <- errorsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
-lag.fit <- lagsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
-# Invece nemmeno questi funzionano
 
 # Modello con tutto il dataset
 fit <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df)
@@ -401,13 +506,126 @@ moran.plot(df$CONSUMO, listw = weight.list)
 # Con il campione perché con tutti i dati risulta caotico
 moran.plot(df_sample$CONSUMO, listw = weight.list.sample)
 
-# Prova con un modello più leggero
-lag.fit <- lagsarlm(CONSUMO ~ HOMEVAL, data = df, listw = weight.list, tol.solve = 1e-8)
+
+# Analisi del modello a-spaziale
+
+# Regressioni lineari semplici
+g1 <- ggplot(data = df, aes(x = STUDIO, y = CONSUMO)) +
+    geom_point() +
+    geom_smooth(col = "red", method = "lm", linewidth = 1, formula = y ~ x) +
+    theme_classic()
+g2 <- ggplot(data = df, aes(x = VALUX, y = CONSUMO)) +
+    geom_point() +
+    geom_smooth(col = "red", method = "lm", linewidth = 1, formula = y ~ x) +
+    theme_classic()
+g3 <- ggplot(data = df, aes(x = HOMEVAL, y = CONSUMO)) +
+    geom_point() +
+    geom_smooth(col = "red", method = "lm", linewidth = 1, formula = y ~ x) +
+    theme_classic()
+
+# Residui del modello con tutte e 3 le variabili
+ggplot(data = df, mapping = aes(CONSUMO, resid(fit))) +
+    geom_point() +
+    theme_classic() +
+    labs(title = "Residui del modello") +
+    geom_hline(yintercept=0, linewidth = 1)
+ggplot(data = df, mapping = aes(resid(fit))) +
+    geom_histogram(aes(y =after_stat(density)),bins = 20,
+                   fill = "yellow", alpha = 1, col = "black") + 
+    geom_density(linewidth = 0.8, fill = "red", alpha = 0.3) +
+    theme_classic()
+ggplot(data.frame(resid = resid(fit)),aes(sample = resid)) + 
+    stat_qq() +
+    stat_qq_line(color = "red", linewidth = 1) +
+    theme_classic()
+# C'è ancora un trend molto incisivo non descritto dal modello
+summary(fit)
 
 # 4: Stima dell'opportuno modello spaziale e discussione
 
+# Modello sul campione:
+sarar.fit.sample <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
+                             listw = weight.list.sample,
+                             tol.solve = 1e-8)
+# La funzione non funziona
+
+# Provo a costruire gli altri due modelli per vedere se funziona
+err.fit.sample <- errorsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
+                             listw = weight.list.sample)
+lag.fit.sample <- lagsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df_sample,
+                           listw = weight.list.sample)
+# Non funzionano neanche queste
+
+# runno i 3 modelli su tutto il df
+sarar.fit <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list,
+                      tol.solve = 1e-8)
+err.fit <- errorsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
+lag.fit <- lagsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df, listw = weight.list)
+
+# Prova con un modello più leggero
+lag.fit <- lagsarlm(CONSUMO ~ HOMEVAL, data = df, listw = weight.list, tol.solve = 1e-8)
 
 
 
 
+# Problem solving
+library(car)
+vif(fit.sample)
+
+ggplot(data = df, aes(x = STUDIO, y = CONSUMO)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+ggplot(data = df, aes(x = STUDIO, y = VALUX)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+ggplot(data = df, aes(x = STUDIO, y = HOMEVAL)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+ggplot(data = df, aes(x = VALUX, y = CONSUMO)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+ggplot(data = df, aes(x = HOMEVAL, y = CONSUMO)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+ggplot(data = df, aes(x = VALUX, y = HOMEVAL)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+
+
+sarar.fit.sample <- sacsarlm(CONSUMO ~ I(scale(HOMEVAL)), data = df_sample,
+                             listw = weight.list.sample,
+                             tol.solve = 1e-8)
+
+w_list_create <- function(df) {
+    for(col in names(df)){
+        col <- scale(df[,col])
+    }
+    # Trasformo il df in matrice delle distanze
+    w_mat <- as.matrix(dist(df))
+    # Mi prendo il valore del decimo percentile
+    qu <- quantile(w_mat, 0.005)
+    # Faccio sì che nessun osservazione sia lontana dalle altre più di questo percentile
+    w_mat[w_mat > qu] <- qu
+    # Creo una matrice delle vicinanze in questo modo
+    # Quindi osservazioni che prima avevano distanza prossima a 0 ora sono vicine qu
+    # Osservazioni di distanza maggiore o uguale a qu hanno vicinanza 0
+    w_mat <- w_mat*(-1) + qu
+    # La diagonale è 0 perché ogni osservazione non è vicina con se stessa
+    diag(w_mat) <- 0
+    # Porto tutti i valori di vicinanza tra 0 e 1 con rescale
+    w_mat <- apply(w_mat, 1, rescale)
+    # Faccio sì che tutte le righe della matrice sommino a 1
+    w_mat <- t(t(w_mat)/rowSums(w_mat))
+    # Trasformo la matrice in una lista di pesi
+    w_list <- mat2listw(w_mat, style = "W")
+    # Fine!
+    return(w_list)
+}
+
+wl <- w_list_create(df_sample[,c("STUDIO", "VALUX", "HOMEVAL")])
+wl
+
+
+sarar.fit.sample <- sacsarlm(CONSUMO ~ I(scale(HOMEVAL)), data = df_sample,
+                             listw = wl, tol.solve = 1e-5)
 
