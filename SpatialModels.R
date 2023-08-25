@@ -560,7 +560,7 @@ lm.LMtests(model = fit2, listw = weight.list.sample.2, test = "RLMlag")
 sarar.fit.2 <- sacsarlm(CONSUMO ~ STUDIO + VALUX + HOMEVAL, data = df.sample, 
                         listw = weight.list.sample.2, tol.solve = 1e-8)
 
-
+summary(sarar.fit.2)
 
 # Problem solving (forse)
 library(car)
