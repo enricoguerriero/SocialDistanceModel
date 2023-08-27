@@ -19,6 +19,8 @@ library(cluster)
 library(cowplot)
 library(sf)
 library(grid)
+library(foreign)
+library(readstata13)
 
 # Scarico tutti i database
 Q20A  <- read.csv("data/q20a.csv")
@@ -215,6 +217,87 @@ myframe$DIP <- agg_df$DIP
 myframe$IND <- agg_df$IND
 myframe$DIS <- agg_df$DIS
 myframe$PENS <- agg_df$PENS
+
+
+# Calcolo del reddito familiare
+
+
+## read in family characteristics
+carcom20 <- read.csv(file="data/carcom20.csv")
+
+## extract chars of household head
+capofam <- carcom20[carcom20$PARENT==1, ]
+
+## age of household head
+capofam$ETA <- 2020-capofam$ANASC
+capofam$ETA2 <- capofam$ETA^2
+
+## extract number of family members
+numcompfam <- tapply(carcom20$NQUEST, carcom20$NQUEST, length)
+numcompfam <- data.frame(NQUEST=as.numeric(names(numcompfam)),
+                         numcompfam=numcompfam)
+
+## stack different occupational forms
+## read
+for(i in 1:5) {
+    istr <- paste("allb", i, " <- read.csv(file='data/allb", i, ".csv')", sep="")
+    eval(parse(text=istr))
+}
+
+## by NQUEST, nord extract ym or similar
+
+## dipendenti
+a1 <- allb1[, c("NQUEST", "nord", "YLM")]
+dimnames(a1)[[2]][3] <- "y1"
+## autonomi
+a2 <- allb2[, c("NQUEST", "nord", "YM", "YM2")]
+a2$y2 <- a2$YM + a2$YM2
+## atipici
+a3 <- allb3[, c("NQUEST", "YM")]
+dimnames(a3)[[2]][2] <- "y3"
+## pensionati 
+a4 <- allb4[, c("NQUEST", "nord", "TPENS", "MESIPEN")]
+## somma su div+compfiss
+a4$y4 <- a4$TPENS*a4$MESIPEN
+## altre entrate
+## (variabili che finiscono per "d"=dummy, per "v"=valore)
+anames <- dimnames(allb5)[[2]]
+allb5v <- allb5[, substr(anames, nchar(anames), nchar(anames))=="V"]
+## sum all different types of income by column
+y5 <- apply(allb5v, 1, sum, na.rm=TRUE)
+a5 <- cbind(allb5[, c("NQUEST","nord")], y5)
+rm(y5)
+
+## merge all with 'nord'
+a12 <- merge(a1, a2, all.x=T, all.y=T)
+a123 <- merge(a12, a3, all.x=T, all.y=T)
+a1234 <- merge(a123, a4, all.x=T, all.y=T)
+a12345 <- merge(a1234, a5, all.x=T, all.y=T)
+a.ind <- a12345[, c(1:3, 6:7, 10:11)]
+
+## sum y by type for each ind
+y.tot <- apply(a.ind[, -(1:2)], 1, sum, na.rm=TRUE)
+a.ind$y.tot <- y.tot
+
+## sum total y by family
+y.fam <- tapply(a.ind$y.tot, a.ind$NQUEST, sum, na.rm=TRUE)
+
+
+## calc. total y for household head
+a.hh <- a.ind[a.ind$nord==1, ]
+y.hh <- tapply(a.hh$y.tot, a.hh$NQUEST, sum, na.rm=TRUE)
+## transf. into dataframes
+dy.hh <- data.frame(NQUEST=as.numeric(names(y.hh)), y.hh=y.hh)
+dy.fam <- data.frame(NQUEST=as.numeric(names(y.fam)), y.fam=y.fam)
+ddy <- merge(dy.hh, dy.fam, by="NQUEST")
+
+## calc. non-hh income
+ddy$y.nhh <- ddy$y.fam-ddy$y.hh
+
+# Unisco i data frame
+myframe <- merge(myframe, ddy, by = "NQUEST")
+
+myframe$REDD <- myframe$y.fam
 
 # Salvo le variabili che mi interessano per alleggerire il workspace
 vars_to_keep <- c("myframe")
