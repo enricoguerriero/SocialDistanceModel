@@ -9,12 +9,14 @@ source("DataLibrary.R")
 # Barplots (variabili discrete)
 
 # NCOMP
-ncomp.plot <- ggplot(data = df, aes(x = NCOMP, fill = factor(NCOMP))) +
-    geom_bar(col = "black") +
+ncomp.plot <- ggplot(data = df, aes(x = NCOMP)) +
+    geom_bar(col = "black", fill = "yellow") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Numero di componenti", y = "Frequenza") +
-    scale_x_discrete(limits = factor(1:9)) 
+    labs(x = "Numero di componenti", y = "Frequenza", 
+         title = "Distribuzione del Numero di Componenti")
+
+ggsave("ncomp.png", plot = ncomp.plot, width = 5, height = 4)
 
 # HAPPY
 happy.plot <- ggplot(data = df, aes(x = HAPPY, fill = factor(HAPPY))) +
@@ -25,12 +27,14 @@ happy.plot <- ggplot(data = df, aes(x = HAPPY, fill = factor(HAPPY))) +
     scale_x_discrete(limits = factor(1:10)) 
 
 # STUDIO
-studio.plot <- ggplot(data = df, aes(x = STUDIO, fill = factor(STUDIO))) +
-    geom_bar(col = "black") +
+studio.plot <- ggplot(data = df, aes(x = STUDIO)) +
+    geom_bar(col = "black", fill = "yellow") +
     theme_bw() +
     theme(legend.position = "") +
-    labs(x = "Titolo di studio", y = "Frequenza") +
-    scale_x_discrete(limits = factor(1:8)) 
+    labs(x = "Titolo di studio", y = "Frequenza",
+         title = "Distribuzione del Titolo di Studio")
+
+ggsave("studio.png", plot = studio.plot, width = 5, height = 4)
 
 # OCC
 occ.plot <- ggplot(data = df, aes(x = factor(OCC), fill = factor(OCC))) +
@@ -275,6 +279,15 @@ homeval.plot <- ggplot(data = df, aes(x = HOMEVAL)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
     labs(x = "Valore della casa", y = "Frequenza")
+homeval.plot.99 <- ggplot(data = df[df$HOMEVAL < quantile(df$HOMEVAL, probs = 0.99),], 
+                        aes(x = HOMEVAL)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Valore della casa", y = "Frequenza",
+         title = "Distribuzione del Valore della Casa")
+
+ggsave("homeval.99.png", plot = homeval.plot.99, width = 5, height = 4)
+
 
 # VALUX
 valux.plot <- ggplot(data = df, aes(x = VALUX)) +
@@ -286,13 +299,31 @@ valux.plot.99 <- ggplot(data = df[df$VALUX < quantile(df$VALUX, probs = 0.99),],
                          aes(x = VALUX)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Valore oggetti di lusso", y = "Frequenza")
+    labs(x = "Valore oggetti di lusso", y = "Frequenza", 
+         title = "Distribuzione del Valore degli Oggetti di Lusso")
+
+ggsave("valux.99.png", plot = valux.plot.99, width = 5, height = 4)
+
 
 # CONSUMO
 consumo.plot <- ggplot(data = df, aes(x = CONSUMO)) +
     geom_histogram(bins = 20, col = "black", fill = "yellow") +
     theme_bw()  +
-    labs(x = "Valore del consumo nel 2020", y = "Frequenza")
+    labs(x = "Valore del consumo nel 2020", y = "Frequenza", title = "Distribuzione del Consumo")
+consumo.plot.99 <- ggplot(data = df[df$CONSUMO < quantile(df$CONSUMO, probs = 0.99),], aes(x = CONSUMO)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Valore del consumo nel 2020", y = "Frequenza", 
+         title = "Distribuzione del Consumo senza l'ultimo percentile")
+lconsumo.plot <- ggplot(data = df, aes(x = log(CONSUMO))) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Logaritmo del consumo nel 2020", y = "Frequenza", title = "Distribuzione del Consumo")
+
+ggsave("consumo.png", plot = consumo.plot, width = 5, height = 4)
+ggsave("consumo.99.png", plot = consumo.plot.99, width = 5, height = 4)
+ggsave("lconsumo.png", plot = lconsumo.plot, width = 5, height = 4)
+
 
 # PROLAV
 prolav.plot <- ggplot(data = df, aes(x = PROLAV)) +
@@ -312,7 +343,17 @@ prored.plot <- ggplot(data = df, aes(x = PRORED)) +
     theme_bw()  +
     labs(x = "Proporzione di percettori di reddito", y = "Frequenza")
 
+# REDD
+red.plot <- ggplot(data = df, aes(x = REDD)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Reddito", y = "Frequenza")
+red.plot.99 <- ggplot(data = df[df$REDD < quantile(df$REDD, probs = 0.99),], aes(x = REDD)) +
+    geom_histogram(bins = 20, col = "black", fill = "yellow") +
+    theme_bw()  +
+    labs(x = "Reddito", y = "Frequenza", title = "Distribuzione del Reddito senza l'ultimo percentile")
 
+ggsave("reddito.99.png", plot = red.plot.99, width = 5, height = 4)
 
 # Analisi multivariata -----
 
@@ -452,3 +493,6 @@ plot_mahConsumo <- ggplot(df, aes(x = mah_dist, y = CONSUMO)) +
     ylab("Consumo") +
     ggtitle("Grafico di prova") +
     theme_bw()
+
+
+

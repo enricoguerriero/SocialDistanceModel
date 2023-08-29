@@ -317,7 +317,7 @@ df <-  myframe[complete.cases(myframe), ]
 df$VALUX <- df$VALOGG + df$VALCAR + df$VALMEZ + df$VALCA
 
 # Creo la variabile consumo
-df$CONSUMO <- df$CIBINT + df$CIBEST + df$BOLLETTE + df$VIAGGI + df$ALTCONS
+df$CONSUMO <- df$CIBINT + df$CIBEST + df$BOLLETTE/12 + df$VIAGGI/12 + df$ALTCONS
 
 # Creo la variabile proporzione di lavoratori per nucleo
 df$PROLAV <- df$OCC/df$NCOMP
@@ -328,5 +328,5 @@ df$PROCIB <- df$CIBEST / (df$CIBEST + df$CIBINT)
 # Creo la variabile proporzione di lavoratori e pensionati (percettori di soldi)
 df$PRORED <- (df$OCC + df$PENS) / df$NCOMP
 
-df.sum <- summary(df)
+#df.sum <- summary(df)
 
