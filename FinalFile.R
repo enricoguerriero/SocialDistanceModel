@@ -96,25 +96,34 @@ p <- 0.1
 fit <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL + REDD + NCOMP, data = df)
 summary(fit)
 
+# Aggiungo i logaritmi
+df$lCONSUMO <- log(df$CONSUMO)
+df$lHOMEVAL <- log(df$HOMEVAL)
+df$lVALUX <- log(df$VALUX)
+df$lREDD <- log(df$REDD)
+df[is.nan(df$lREDD),]$lREDD <- 0
+df[df$lREDD == -Inf,]$lREDD <- 0
+
+
 lfit <- lm(lCONSUMO ~ STUDIO + lVALUX + lHOMEVAL + lREDD + NCOMP, data = df)
 summary(lfit)
 
 # Grafici
 r1 <- ggplot(data = df, mapping = aes(log(CONSUMO), resid(lfit))) +
     geom_point() +
-    theme_classic() +
+    theme_bw() +
     labs(title = "Residui del modello", x = "Logaritmo del consumo", y = "Residui") +
     geom_hline(yintercept=0, linewidth = 1)
 r2 <- ggplot(data = df, mapping = aes(resid(lfit))) +
     geom_histogram(aes(y =after_stat(density)),bins = 20,
                    fill = "yellow", alpha = 1, col = "black") + 
     geom_density(linewidth = 0.8, fill = "red", alpha = 0.3) +
-    theme_classic() +
+    theme_bw() +
     labs(title = "Distribuzione dei residui", x = "Residui", y = "Densità")
 r3 <- ggplot(data.frame(resid = resid(lfit)),aes(sample = resid)) + 
     stat_qq() +
     stat_qq_line(color = "red", linewidth = 1) +
-    theme_classic() +
+    theme_bw() +
     labs(title = "q-q plot dei quantili dei residui", x = "Quantili empirici", y = "Quantili teorici")
 
 ggsave("r1.png", plot = r1, width = 5, height = 4)
@@ -123,6 +132,7 @@ ggsave("r3.png", plot = r3, width = 5, height = 4)
 
 # Provo uno step aic
 aicfit <- stepAIC(fit)
+aiclfit <- stepAIC(lfit)
 
 # Costruzione della matrice di prossimità
 wl1 <- w_list_create(df[,c("STUDIO", "HOMEVAL", "VALUX", "REDD", "NCOMP")])
@@ -226,12 +236,6 @@ moran.plot(df[zr == 0,]$CONSUMO, listw = wl1)
 
 # Nuova matrice dei pesi:
 # Costruisco i logaritmi delle variabili e le utilizzo sotto logaritmo per la matrice
-df$lCONSUMO <- log(df$CONSUMO)
-df$lHOMEVAL <- log(df$HOMEVAL)
-df$lVALUX <- log(df$VALUX)
-df$lREDD <- log(df$REDD)
-df[is.nan(df$lREDD),]$lREDD <- 0
-df[df$lREDD == -Inf,]$lREDD <- 0
 
 wl3 <- w_list_create(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
 zr <- zero_rows_finder(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
@@ -240,25 +244,31 @@ zr <- zero_rows_finder(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
 # Modello senza isole a-spaziale
 fit <- lm(CONSUMO ~ STUDIO + VALUX + HOMEVAL + REDD + NCOMP, data = df[zr==0,])
 lfit <- lm(lCONSUMO ~ STUDIO + lVALUX + lHOMEVAL + lREDD + NCOMP, data = df[zr==0,])
-summary(fit)
+summary(lfit)
 
 # Test per valutare l'introduzione di un'interazione
 # Confronto anche tra le due matrici dei pesi
 # Metodo 1:
-lm.LMtests(model = fit, listw = wl3, test = "SARMA")
+lm.LMtests(model = lfit, listw = wl3, test = "SARMA")
 # p-value <2.2e-16
-lm.LMtests(model = fit, listw = wl3, test = "RLMerr")
+lm.LMtests(model = lfit, listw = wl3, test = "RLMerr")
 # p-value 5.811e-8
-lm.LMtests(model = fit, listw = wl3, test = "RLMlag")
+lm.LMtests(model = lfit, listw = wl3, test = "RLMlag")
 # p-value 6.728e-9
 
 # L'abbassamento dei p-value è un risultato molto interessante
 
 # Creazione del modello
 
-sar.fit <- lagsarlm(log(CONSUMO) ~ REDD + log(HOMEVAL) + log(VALUX) + STUDIO,
+sar.fit <- lagsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
                     data = df[(zr == 0),], listw = wl3)
 summary(sar.fit)
+sem.fit <- errorsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
+                    data = df[(zr == 0),], listw = wl3)
+summary(sem.fit)
+sarar.fit <- sacsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
+                    data = df[(zr == 0),], listw = wl3)
+summary(sarar.fit)
 
 # Residui
 ggplot(data = df[zr == 0,], mapping = aes(log(CONSUMO), resid(sar.fit))) +
@@ -271,3 +281,68 @@ ggplot(data = df[zr == 0,], mapping = aes(log(CONSUMO), resid(sar.fit))) +
 # Test di Moran
 moran.test(df[zr == 0,]$CONSUMO, wl1)
 moran.test(df[zr == 0,]$CONSUMO, wl2)
+
+# Test sui residui
+moran.test(lfit$residuals, wl3)
+
+
+moran.test(df[zr == 0,]$lCONSUMO, wl3)
+
+
+simple.sar.fit <- lagsarlm(lCONSUMO ~ lREDD, data = df[(zr == 0),], listw = wl3)
+summary(simple.sar.fit)
+
+# Provo più cutoff diversi
+p <- 0.01
+wl3_0.01 <- w_list_create(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+zr <- zero_rows_finder(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+
+sar.fit_0.01 <- lagsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
+                         data = df[(zr == 0),], listw = wl3_0.01)
+summary(sar.fit_0.01)
+
+p <- 0.05
+wl3_0.05 <- w_list_create(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+zr <- zero_rows_finder(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+
+sar.fit_0.05 <- lagsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
+                         data = df[(zr == 0),], listw = wl3_0.05)
+summary(sar.fit_0.05)
+
+p <- 0.15
+wl3_0.15 <- w_list_create(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+zr <- zero_rows_finder(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+
+sar.fit_0.15 <- lagsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
+                         data = df[(zr == 0),], listw = wl3_0.15)
+summary(sar.fit_0.15)
+
+p <- 0.2
+wl3_0.2 <- w_list_create(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+zr <- zero_rows_finder(df[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+
+sar.fit_0.2 <- lagsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
+                         data = df[(zr == 0),], listw = wl3_0.2)
+summary(sar.fit_0.2)
+
+# Inserisco in un df i dati per il grafico (a mano perché sto prima sì ok)
+
+gdf <- data.frame(x = c(0.01, 0.05, 0.1, 0.15, 0.2), y = c(0.31069, 0.57133, 0.72418, 0.78566, 0.83343))
+
+co <- ggplot(data = gdf, aes(x = x, y = y)) +
+    geom_point() +
+    geom_line() +
+    theme_bw() +
+    labs(x = "Cutoff sulla matrice delle prossimità", y = "valore del coefficiente spaziale")
+ggsave("cutoff.png", plot = co, width = 5, height = 4)
+
+
+
+
+
+# TRAIN TEST E TEST SET
+
+# Faccio un train set di 70%
+n <- dim(df)[1]/10*7
+set.seed(69)
+df_sample <- df %>% sample_n(size = n)
