@@ -271,12 +271,25 @@ sarar.fit <- sacsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
 summary(sarar.fit)
 
 # Residui
-ggplot(data = df[zr == 0,], mapping = aes(log(CONSUMO), resid(sar.fit))) +
+rf1 <- ggplot(data = df[zr == 0,], mapping = aes(log(CONSUMO), resid(sar.fit))) +
     geom_point() +
     theme_classic() +
-    labs(title = "Residui del modello") +
+    labs(title = "Residui del modello", x = "Logaritmo del consumo", y = "Residui") +
     geom_hline(yintercept=0, linewidth = 1)
-
+rf2 <- ggplot(data = df[zr == 0,], mapping = aes(resid(sar.fit))) +
+    geom_histogram(aes(y =after_stat(density)),bins = 20,
+                   fill = "yellow", alpha = 1, col = "black") + 
+    geom_density(linewidth = 0.8, fill = "red", alpha = 0.3) +
+    theme_classic() +
+    labs(title = "Istogramma della distribuzione dei residui", x = "Residui", y = "Densità")
+rf3 <- ggplot(data.frame(resid = resid(sar.fit)),aes(sample = resid)) + 
+    stat_qq() +
+    stat_qq_line(color = "red", linewidth = 1) +
+    theme_classic() +
+    labs(title = "Q-Q plot dei residui", x = "Quantili teorici", y = "Quantili empirici")
+ggsave("rf1.png", plot = rf1, width = 5, height = 4)
+ggsave("rf2.png", plot = rf2, width = 5, height = 4)
+ggsave("rf3.png", plot = rf3, width = 5, height = 4)
 
 # Test di Moran
 moran.test(df[zr == 0,]$CONSUMO, wl1)
@@ -345,4 +358,72 @@ ggsave("cutoff.png", plot = co, width = 5, height = 4)
 # Faccio un train set di 70%
 n <- dim(df)[1]/10*7
 set.seed(69)
-df_sample <- df %>% sample_n(size = n)
+v <- sample(dim(df)[1], dim(df)[1]/10*7)
+length(unique(v)) == length(v)
+v <- sort(v$X1.dim.df..1.)
+train.set <- df[v,c("lCONSUMO", "lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")]
+test.set <- df[-v,c("lCONSUMO", "lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")]
+
+p <- 0.1
+wl3_tt <- w_list_create(train.set[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+zr <- zero_rows_finder(train.set[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+
+sar.fit_tt <- lagsarlm(lCONSUMO ~ lREDD + lHOMEVAL + lVALUX + STUDIO + NCOMP,
+                         data = train.set[(zr == 0),], listw = wl3_tt)
+summary(sar.fit_tt)
+
+wl3_ttt <-  w_list_create(test.set[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+zr <- zero_rows_finder(test.set[,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")])
+pdf <- predict(sar.fit_tt, newdata = test.set[zr == 0,c("lHOMEVAL", "lVALUX", "lREDD", "NCOMP", "STUDIO")], 
+        listw = wl3_ttt)
+pdf <- as.numeric(pdf)
+tt <- ggplot(data = test.set[zr == 0,], aes(x = lCONSUMO, y = lCONSUMO)) +
+    geom_point(aes(x = test.set[zr == 0,]$lCONSUMO, y = pdf)) +
+    theme_bw() +
+    geom_abline(slope = 1, intercept = 0, col = "red", lwd = 1) +
+    labs(x = "Valori reali", y = "Valori stimati dal modello",
+         title = "Valori Reali vs Valori Stimati")
+ggsave("tt.png", plot = tt, width = 5, height = 4)
+
+tdf <- data.frame(a = test.set[zr == 0,]$lCONSUMO - pdf)
+ttt <- ggplot(data =tdf, aes(x = 1:dim(tdf)[1],y = a)) +
+    geom_point() +
+    theme_bw() +
+    geom_abline(slope = 0, intercept = 0, lwd = 1, col = "red") +
+    labs(x = "Indice", y = "Differenza tra valori reali e valori stimati",
+         title = "Distribuzione della Differenza tra Valori Reali e Stimati")
+ggsave("ttt.png", plot = ttt, width = 5, height = 4)
+
+t <- plot_grid(tt, ttt,
+          nrow = 1)
+ggsave("t.png", plot = t, width = 8, height = 4)
+
+
+
+# moran plot a casissimo
+mp <- moran.plot(df[zr == 0,]$lCONSUMO, listw = wl3,
+           xlab = "Logaritmo del consumo", ylab = "Lag spaziale tra i consumi")
+ggsave("mp.png", plot = mp, width = 5, height = 4)
+
+
+
+# Provo a fare una heatmap
+heatmap(listw2mat(wl3))
+
+
+# Faccio un grafico per le slide se ci riesco
+
+aaa <- data.frame(x = 0:4, y = 0:4)
+b <- data.frame(x = c(1,2,1,4), y = c(3,3,2,1))
+ex <- ggplot(aaa, aes(x,y)) +
+    theme_bw() +
+    geom_segment(aes(x = 1, y = 2, xend = 1, yend = 3), col = "red", lwd = 1) +
+    geom_segment(aes(x = 1, y = 2, xend = 2, yend = 3), col = "red", lwd = 1) +
+    geom_segment(aes(x = 1, y = 3, xend = 2, yend = 3), col = "red", lwd = 1) +
+    geom_point(col = "white") +
+    geom_point(data = b, aes(x, y), size = 3) +
+    geom_text(aes(label = "Rook/Queen", x = 0.5, y = 2.5)) +
+    geom_text(aes(label = "Rook/Queen", x = 1.5, y = 3.25)) +
+    geom_text(aes(label = "Queen", x = 1.75, y = 2.25)) +
+    geom_text(aes(label = "Isola", x = 3.75, y = 1)) 
+ggsave("ex.png", plot = ex, width = 5, height = 4)

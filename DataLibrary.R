@@ -21,6 +21,8 @@ library(sf)
 library(grid)
 library(foreign)
 library(readstata13)
+library(gplots)
+
 
 # Scarico tutti i database
 Q20A  <- read.csv("data/q20a.csv")
